@@ -1,5 +1,5 @@
 # Fdb version 4
-["pdflatex"] 1743201636.05202 "d:/Year1/Spring/IntoML/Math for AI/Intro To Machine learning/Homework 3/Report/main.tex" "main.pdf" "main" 1743201637.96882 0
+["pdflatex"] 1743202920.28645 "d:/Year1/Spring/IntoML/Math for AI/Intro To Machine learning/Homework 3/Report/main.tex" "main.pdf" "main" 1743202922.55857 0
   "C:/Users/STUDENT/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map" 1742570335 80909 eab91d9745dd2edfd62a31d53cd5fe15 ""
   "C:/Users/STUDENT/AppData/Local/MiKTeX/fonts/pk/ljfour/jknappen/ec/dpi600/tcrm1000.pk" 1742471502 11548 1543d5bf0a0cfb5078c383ad2ef6184f ""
   "C:/Users/STUDENT/AppData/Local/MiKTeX/miktex/data/le/pdftex/pdflatex.fmt" 1742467951 12037057 51a85339f43877ce4a6ea87e23a8542c ""
@@ -162,12 +162,12 @@
   "C:/Users/STUDENT/AppData/Local/Programs/MiKTeX/tex/latex/trimspaces/trimspaces.sty" 1253169183 1380 971a51b00a14503ddf754cab24c3f209 ""
   "C:/Users/STUDENT/AppData/Local/Programs/MiKTeX/tex/latex/xcolor/xcolor.sty" 1729265222 55384 b454dec21c2d9f45ec0b793f0995b992 ""
   "Train_Val_Loss_Acc.png" 1743195281 56375 8a858409110032d811a2f8866cc22467 ""
-  "d:/Year1/Spring/IntoML/Math for AI/Intro To Machine learning/Homework 3/Report/main.tex" 1743201634 47767 92bcf33c9f826192fe00901dd556f376 ""
+  "d:/Year1/Spring/IntoML/Math for AI/Intro To Machine learning/Homework 3/Report/main.tex" 1743202919 48568 d91a1ccaccba3e08c517d69a2d4f2a1f ""
   "image.png" 1742589774 29155 7451c5b9aa5eea769827977fddd28fbc ""
   "image1.png" 1742589697 19951 f2812aa6bc15721cdae345a432c0d95b ""
   "lr_comparison.png" 1743196529 28313 c43b816ded45f1fea2ad62c5fe28e68f ""
-  "main.aux" 1743201637 809 514004205aa603e3290eca9e5481f6cd "pdflatex"
-  "main.tex" 1743201634 47767 92bcf33c9f826192fe00901dd556f376 ""
+  "main.aux" 1743202922 809 514004205aa603e3290eca9e5481f6cd "pdflatex"
+  "main.tex" 1743202919 48568 d91a1ccaccba3e08c517d69a2d4f2a1f ""
   (generated)
   "main.aux"
   "main.log"

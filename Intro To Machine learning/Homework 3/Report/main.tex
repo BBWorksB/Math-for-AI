@@ -1263,8 +1263,21 @@ z = y_1 + y_2.
          \end{itemize}
    \end{enumerate}
 
-      
-
+   \subsection*{Bonus Adams}
+   How does a properly-tuned Adam Optimizer compare to SGD?
+   \begin{itemize}
+      \item Adam convergence faster than SGD.
+      \item Adam is less sensitive to learning rate than SGD that needs careful tuning
+      \item Adam handle noisy gradiesnt well compared to SGD that struggles without momentum
+      \item Adam is faster and works well with the minimal tunid however it may not generalize well as a SGD.
+      \item SGD with momentum nees more careful tuning but it can lead to better final accuracy in some cases.
+   \end{itemize}
+   How does the sensitivity of Adam to its learning rate compare to SGD.
+   \begin{itemize}
+      \item Adam is less sensitive to the initial learning rate than SGD since it adapts to the gradient scale. 
+   \end{itemize}
 
 \end{enumerate}
+
+
 \end{document}
