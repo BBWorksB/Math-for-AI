@@ -26,7 +26,11 @@ class SGD(Optimizer):
         params : Variable[]
             List of parameters that the gradients correspond to.
         """
-        raise NotImplementedError()
+        #  implement the SGD.apply gradients method
+        for param in params:
+            if param.grad is not None:
+                param.value -= self.learning_rate * param.grad
+        # raise NotImplementedError()
 
 
 class Adam(Optimizer):
@@ -58,7 +62,10 @@ class Adam(Optimizer):
         params : np.array[]
             List of parameters that will be used with this optimizer.
         """
-        raise NotImplementedError()
+        # Initialize first and second moment vectors
+        self.m = [np.zeros_like(param.value) for param in params]
+        self.v = [np.zeros_like(param.value) for param in params]
+        # raise NotImplementedError()
 
     def apply_gradients(self, params):
         """Apply gradients to parameters.
@@ -68,4 +75,20 @@ class Adam(Optimizer):
         params : Variable[]
             List of parameters that the gradients correspond to.
         """
-        raise NotImplementedError()
+        # raise NotImplementedError()
+        # Increment timestep
+        self.t += 1
+        
+        for i, param in enumerate(params):
+            if param.grad is None:
+                continue
+            self.m[i] = self.beta1 * self.m[i] + (1 - self.beta1) * param.grad
+            
+
+            self.v[i] = self.beta2 * self.v[i] + (1 - self.beta2) * (param.grad ** 2)
+            
+            m_hat = self.m[i] / (1 - self.beta1 ** self.t)
+            
+            v_hat = self.v[i] / (1 - self.beta2 ** self.t)
+            
+            param.value -= self.learning_rate * m_hat / (np.sqrt(v_hat) + self.epsilon)

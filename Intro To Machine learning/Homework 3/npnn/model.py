@@ -95,7 +95,12 @@ class Sequential:
         np.array
             Batch predictions; should have shape (batch, num_classes).
         """
-        raise NotImplementedError()
+        out = X
+        for module in self.modules:
+            out = module.forward(out, train=train)
+        out = self.loss.forward(out, train=train)
+        return out
+        # raise NotImplementedError()
 
     def backward(self, y):
         """Model backwards pass.
@@ -105,7 +110,12 @@ class Sequential:
         y : np.array
             True labels.
         """
-        raise NotImplementedError()
+
+        grad = self.loss.backward(y)
+        for module in reversed(self.modules):
+            grad = module.backward(grad)
+        self.optimizer.step()
+        # raise NotImplementedError()
 
     def train(self, dataset):
         """Fit model on dataset for a single epoch.
@@ -127,7 +137,30 @@ class Sequential:
             [0] Mean train loss during this epoch.
             [1] Mean train accuracy during this epoch.
         """
-        raise NotImplementedError()
+        total_loss = 0
+        total_accuracy = 0
+        num_batches = 0
+
+        for X_batch, y_batch in dataset:
+            # Forward pass
+            predictions = self.forward(X_batch, train=True)
+            
+            # Compute loss and accuracy
+            loss = categorical_cross_entropy(predictions, y_batch)
+            accuracy = categorical_accuracy(predictions, y_batch)
+            
+            total_loss += loss
+            total_accuracy += accuracy
+            num_batches += 1
+            
+            # Backward pass
+            self.backward(y_batch)
+
+        mean_loss = total_loss / num_batches
+        mean_accuracy = total_accuracy / num_batches
+
+        return mean_loss, mean_accuracy
+        # raise NotImplementedError()
 
     def test(self, dataset):
         """Compute test/validation loss for dataset.
@@ -143,4 +176,24 @@ class Sequential:
             [0] Mean test loss.
             [1] Test accuracy.
         """
-        raise NotImplementedError()
+        total_loss = 0
+        total_accuracy = 0
+        num_batches = 0
+
+        for X_batch, y_batch in dataset:
+            # Forward pass
+            predictions = self.forward(X_batch, train=False)
+            
+            # Compute loss and accuracy
+            loss = categorical_cross_entropy(predictions, y_batch)
+            accuracy = categorical_accuracy(predictions, y_batch)
+            
+            total_loss += loss
+            total_accuracy += accuracy
+            num_batches += 1
+
+        mean_loss = total_loss / num_batches
+        mean_accuracy = total_accuracy / num_batches
+
+        return mean_loss, mean_accuracy
+        # raise NotImplementedError()

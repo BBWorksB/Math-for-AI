@@ -83,7 +83,9 @@ class ELU(Module):
         np.array
             Output of this activation function x_k = f_k(., x_{k-1}).
         """
-        raise NotImplementedError()
+        self.x = x
+        return np.where(x > 0, x, self.alpha * (np.exp(x) - 1))
+        # raise NotImplementedError()
 
     def backward(self, grad):
         """Backward propogation for ELU.
@@ -108,7 +110,8 @@ class ELU(Module):
             = dL/dx_k diag(1 * 1_(x > 0) + alpha * e^x) 1_(x <= 0))
             = 1 * 1_(x > 0) + alpha * e^x) 1_(x <= 0) * dL/dx_k
         """
-        dLdx = None
+        
+        dLdx = grad * np.where(self.x > 0, 1, self.alpha * np.exp(self.x))
         assert(np.shape(dLdx) == np.shape(self.x))
         return dLdx
 
@@ -126,9 +129,17 @@ class Dense(Module):
 
     def __init__(self, dim_in, dim_out):
 
-        # TODO
-        W = None
-        b = None
+#         you should
+# initialize the bias b to all zeros; W should be initialized using the Glorot Uniform initialization.
+# In the Glorot Uniform initialization, each element is drawn from a uniform distribution Unif(−u, u),
+# where u = sqrt(p6/(dim in + dim out)).
+
+        # Initialize weights using Glorot Uniform initialization
+        u = np.sqrt(6 / (dim_in + dim_out))
+        W = np.random.uniform(-u, u, (dim_out, dim_in))
+        b = np.zeros((dim_out,))
+        # W = None
+        # b = None
 
         self.trainable_weights = [Variable(W), Variable(b)]
 
@@ -153,11 +164,15 @@ class Dense(Module):
         -------
         np.array
             Output of this layer f(w, x) for weights w. Should have dimensions
+            
             (batch, dim).
         """
         self.x = x
         W, b = self.trainable_weights
-        raise NotImplementedError()
+        return np.dot(x, W.value.T) + b.value
+        # self.x = x
+        # W, b = self.trainable_weights
+        # raise NotImplementedError()
 
     def backward(self, grad):
         """Backward propagation for a Dense layer.
@@ -196,13 +211,26 @@ class Dense(Module):
         """
         W, b = self.trainable_weights
         batch = self.x.shape[0]
-        # TODO
-        # W.grad = dL/dW_k = ?
-        W.grad = None
-        # b.grad = dL/db_k = ?
-        b.grad = None
-        # dx = dL/dx_{k-1} = ?
-        dx = None
+
+        # Compute gradients for weights and biases
+        W.grad = np.dot(grad.T, self.x) / batch
+        b.grad = np.sum(grad, axis=0) / batch
+
+        # Compute gradient for the input to the previous layer
+        dx = np.dot(grad, W.value)
+
+        return dx
+
+
+        # W, b = self.trainable_weights
+        # batch = self.x.shape[0]
+        
+        # # W.grad = dL/dW_k = ?
+        # W.grad = None
+        # # b.grad = dL/db_k = ?
+        # b.grad = None
+        # # dx = dL/dx_{k-1} = ?
+        # dx = None
 
         assert(np.shape(self.x) == np.shape(dx))
         assert(np.shape(W.value) == np.shape(W.grad))
