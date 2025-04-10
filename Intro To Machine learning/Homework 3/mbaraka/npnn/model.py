@@ -48,27 +48,20 @@ def categorical_accuracy(pred, labels):
 
 
 class Sequential:
-    """Sequential neural network model.
-
-    Parameters
-    ----------
-    modules : Module[]
-        List of modules; used to grab trainable weights.
-    loss : Module
-        Final output activation and loss function.
-    optimizer : Optimizer
-        Optimization policy to use during training.
-    """
     def __init__(self, modules, loss=None, optimizer=None):
+        # Check types
         for module in modules:
-            assert(isinstance(module, Module))
-        assert(isinstance(loss, Module))
-        assert(isinstance(optimizer, Optimizer))
-
+            assert isinstance(module, Module)
+        
+        if loss is not None:
+            assert isinstance(loss, Module)
+        if optimizer is not None:
+            assert isinstance(optimizer, Optimizer)
+            
         self.modules = modules
         self.loss = loss
         
-
+        # Collect trainable parameters
         self.params = []
         for module in modules:
             self.params += module.trainable_weights
@@ -78,23 +71,6 @@ class Sequential:
             self.optimizer.initialize(self.params)
 
     def forward(self, X, train=True):
-        """Model forward pass.
-
-        Parameters
-        ----------
-        X : np.array
-            Input data
-
-        Keyword Args
-        ------------
-        train : bool
-            Indicates whether we are training or testing.
-
-        Returns
-        -------
-        np.array
-            Batch predictions; should have shape (batch, num_classes).
-        """
         # Forward pass through each module
         for module in self.modules:
             X = module.forward(X, train)
@@ -106,46 +82,23 @@ class Sequential:
         return X
 
     def backward(self, y):
-        """Model backwards pass.
-
-        Parameters
-        ----------
-        y : np.array
-            True labels.
-        """
+        # Backward pass through loss
         if self.loss is not None:
             grad = self.loss.backward(y)
         else:
             grad = y
             
+        # Backward pass through modules in reverse order
         for module in reversed(self.modules):
             grad = module.backward(grad)
             
+        # Apply gradients if optimizer is provided
         if self.optimizer is not None:
             self.optimizer.apply_gradients(self.params)
             
         return grad
 
     def train(self, dataset):
-        """Fit model on dataset for a single epoch.
-
-        Parameters
-        ----------
-        X : np.array
-            Input images
-        dataset : Dataset
-            Training dataset with batches already split.
-
-        Notes
-        -----
-        You may find tqdm, which creates progress bars, to be helpful:
-
-        Returns
-        -------
-        (float, float)
-            [0] Mean train loss during this epoch.
-            [1] Mean train accuracy during this epoch.
-        """
         total_loss = 0
         total_acc = 0
         count = 0
@@ -166,19 +119,6 @@ class Sequential:
         return total_loss / count, total_acc / count
 
     def test(self, dataset):
-        """Compute test/validation loss for dataset.
-
-        Parameters
-        ----------
-        dataset : Dataset
-            Validation dataset with batches already split.
-
-        Returns
-        -------
-        (float, float)
-            [0] Mean test loss.
-            [1] Test accuracy.
-        """
         total_loss = 0
         total_acc = 0
         count = 0
