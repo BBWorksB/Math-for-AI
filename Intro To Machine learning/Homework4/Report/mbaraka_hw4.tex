@@ -196,28 +196,28 @@ sync_runtime = []
 async_runtime = []
 
 for m in m_values:
+    # Simulate gradient times: shape (iterations, workers)
     sample = np.random.exponential(scale=1/lambda_rate, size=(num_iter, m))
 
-    # Synchronous: max of each row
+    # Synchronous: wait for the slowest (max)
     sync_average = np.mean(np.max(sample, axis=1))
     sync_runtime.append(sync_average)
 
-    # Assynchoronus: mean of each row
-    async_average = np.mean(np.mean(sample, axis=1))
+    # Asynchronous: only wait for the fastest (min)
+    async_average = np.mean(np.min(sample, axis=1))
     async_runtime.append(async_average)
 
-# Plotting
+# Plotting: Simulated Runtimes
 plt.figure(figsize=(10, 6))
-plt.plot(m_values, sync_runtime, label='Synchronous SGD', marker='o')
-plt.plot(m_values, async_runtime, label='Asynchronous SGD', marker='s')
+plt.plot(m_values, sync_runtime, label='Synchronous SGD (Simulated)', marker='o')
+plt.plot(m_values, async_runtime, label='Asynchronous SGD (Simulated)', marker='s')
 plt.xlabel('Number of Worker Nodes (m)')
 plt.ylabel('Average Runtime per Iteration')
 plt.title('Synchronous vs Asynchronous SGD Runtimes')
 plt.legend()
 plt.grid(True)
 plt.tight_layout()
-plt.savefig("sgd_runtimes_plot.pdf")  # Save for submission
-plt.show()        
+plt.show()       
     \end{verbatim}
 
     \textbf{Output}
@@ -247,14 +247,12 @@ plt.show()
     \[\mathbb{E}[X_{1:m}] = \frac{1}{m \lambda}\]
 
     \begin{verbatim}
-# Harmonic numbers for synchronous SGD
+# Theoretical Runtimes
 harmonic_numbers = np.array([np.sum(1 / np.arange(1, m + 1)) for m in m_values])
 expected_sync = (1 / lambda_rate) * harmonic_numbers
+expected_async = 1 / (lambda_rate * np.array(list(m_values)))
 
-# Expected runtime for asynchronous SGD is constant
-expected_async = np.full_like(m_values, 1 / lambda_rate, dtype=np.float64)
-
-# Plot: Simulated vs Theoretical runtimes
+# Plot: Simulated vs Theoretical
 plt.figure(figsize=(10, 6))
 plt.plot(m_values, sync_runtime, label='Simulated Sync SGD', marker='o')
 plt.plot(m_values, async_runtime, label='Simulated Async SGD', marker='s')
@@ -606,7 +604,7 @@ print("Eigen Vectors", eigvecs)
 
 
     \item[(c)] [8 points] Now we want to represent the data $x_1, \cdots, x_3$ using a 2-dimensional subspace instead of a 3-dimensional one. PCA gives us the 2-D plane which minimizes the difference between the original data and the data projected to the 2-dimensional plane. In other words, $x_i$ can be approximated as:
-    
+
 
 \[
     \hat{x}_i = a_{i1}u_1 + a_{i2}u_2 + \bar{x},
@@ -733,7 +731,7 @@ Visual of PCA wiht different colors with respective activity labels
             \label{fig:elbow_graph}
         \end{minipage}
     \end{figure}
-    - The optimal number of cluser is 6.\\
+    - The optimal number of cluser is 5.\\
     - Distortion measures the sum of the squared distance between the  data points and the assigned clustes this means an increase in the clusters leads to the 
     decrease of the the distortion. This is mainly because increaseing clusters allows the centroing to better fit the data which reduces the distance between points 
     and their nearest centroid. However, as K becomes large the distortion the decreasing rate also diminishes  which leads to the elbow point where addding more clustersprovides the diminishing returns in reducing distortion.
@@ -755,7 +753,7 @@ Visual of PCA wiht different colors with respective activity labels
             \label{fig:ari_graph}
         \end{minipage}
     \end{figure}
-    - The optimal was 11.\\
+    - The optimal was 9.\\
     - ARI measures the similarity between clustering results and the ground truth labels. As the number of clusters increase the followng trend is observeds.
     \begin{itemize}
         \item Plateau: Beyond the optimal K, the Ari scrore declines as the clusters become too granular, this leads reduction of alignment with the ground truth.
@@ -765,8 +763,8 @@ Visual of PCA wiht different colors with respective activity labels
 
 \subsection{Prototype Selection using K-means clustering}
 \begin{enumerate}
-    \item [(a)] \textbf{Random Selection} : Average Accuracy with Random Selection over 10 repetitions: 0.9223.
-    \item [(b)] \textbf{Using K-means clustering by Class} : Accuracy with K-means Selection: 0.9057
+    \item [(a)] \textbf{Random Selection} : Average Accuracy with Random Selection over 10 repetitions: 0.9192.
+    \item [(b)] \textbf{Using K-means clustering by Class} : Accuracy with K-means Selection: 0.8931.
 \end{enumerate}
 
 \subsubsection*{Comparizon of the Random selection and the K-meands clusering by class model Accuracy}
@@ -774,5 +772,39 @@ The Random prototype selection had a higher Accuracy of 92.23\% compared to the 
 may capture diverse sample from each class while K-means clustering selects the prototype based on clusters that ensure that the selected samples are representative of the cluser centroids 
 however, this may miss some outlier or diverse samples. And since the later focuess more on centroirds rather than capturing the full variablity of the data this may be the reason of the less performance of the models
 compared to the reandom selection model.
+
+\subsection{Autoencoder for Feature Learning}
+\textbf{Reconstruction}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{Reconstruction.png}
+    % \caption{Reconstruction of data using Autoencoder.}
+    \label{fig:reconstruction}
+\end{figure}
+
+\clearpage
+\textbf{Autoencoder Embedding} 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{Autoencoder.png}
+    % \caption{Autoencoder embedding of data.}
+    \label{fig:autoencoder_embedding}
+\end{figure}
+
+\textbf{ARI for for different k-means clustering}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{Autoencoder_ari.png}
+    % \caption{Adjusted Rand Index for different K-means clustering using Autoencoder features.}
+    \label{fig:autoencoder_ari}
+\end{figure}
+
+\textbf{K-means Clustering Visualization}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{Autoencoder_kmeans.png}
+    % \caption{K-means clustering visualization using Autoencoder features.}
+    \label{fig:autoencoder_kmeans}
+\end{figure}
 
 \end{document}

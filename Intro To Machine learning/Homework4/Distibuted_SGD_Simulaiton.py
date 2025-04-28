@@ -11,37 +11,35 @@ sync_runtime = []
 async_runtime = []
 
 for m in m_values:
+    # Simulate gradient times: shape (iterations, workers)
     sample = np.random.exponential(scale=1/lambda_rate, size=(num_iter, m))
 
-    # Synchronous: max of each row
+    # Synchronous: wait for the slowest (max)
     sync_average = np.mean(np.max(sample, axis=1))
     sync_runtime.append(sync_average)
 
-    # Assynchoronus: mean of each row
-    async_average = np.mean(np.mean(sample, axis=1))
+    # Asynchronous: only wait for the fastest (min)
+    async_average = np.mean(np.min(sample, axis=1))
     async_runtime.append(async_average)
 
-# Plotting
+# Plotting: Simulated Runtimes
 plt.figure(figsize=(10, 6))
-plt.plot(m_values, sync_runtime, label='Synchronous SGD', marker='o')
-plt.plot(m_values, async_runtime, label='Asynchronous SGD', marker='s')
+plt.plot(m_values, sync_runtime, label='Synchronous SGD (Simulated)', marker='o')
+plt.plot(m_values, async_runtime, label='Asynchronous SGD (Simulated)', marker='s')
 plt.xlabel('Number of Worker Nodes (m)')
 plt.ylabel('Average Runtime per Iteration')
 plt.title('Synchronous vs Asynchronous SGD Runtimes')
 plt.legend()
 plt.grid(True)
 plt.tight_layout()
-plt.show() 
+plt.show()
 
-# For part e
-# Harmonic numbers for synchronous SGD
+# Theoretical Runtimes
 harmonic_numbers = np.array([np.sum(1 / np.arange(1, m + 1)) for m in m_values])
 expected_sync = (1 / lambda_rate) * harmonic_numbers
+expected_async = 1 / (lambda_rate * np.array(list(m_values)))
 
-# Expected runtime for asynchronous SGD is constant
-expected_async = np.full_like(m_values, 1 / lambda_rate, dtype=np.float64)
-
-# Plot: Simulated vs Theoretical runtimes
+# Plot: Simulated vs Theoretical
 plt.figure(figsize=(10, 6))
 plt.plot(m_values, sync_runtime, label='Simulated Sync SGD', marker='o')
 plt.plot(m_values, async_runtime, label='Simulated Async SGD', marker='s')
